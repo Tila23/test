@@ -4,7 +4,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>💘 Saint Valentin</title>
+  <title>Bambi 🦌</title>
   <style>
     body {
       height: 100vh;
@@ -23,19 +23,46 @@
       border-radius: 20px;
       color: white;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      width: min(520px, 92vw);
+    }
+
+    .theme {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      user-select: none;
+    }
+
+    .badge .emoji {
+      font-size: 22px;
+      line-height: 1;
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin: 0 0 22px 0;
+      font-size: 26px;
+      line-height: 1.2;
     }
 
     .buttons {
-  position: relative;
-  width: 100%;
-  height: 320px;   /* AVANT: ~120px → TROP PETIT */
-  margin-top: 10px;
-}
-
+      position: relative;
+      width: 100%;
+      height: 320px;
+      margin-top: 10px;
+    }
 
     button {
       padding: 15px 30px;
@@ -45,6 +72,9 @@
       cursor: pointer;
       position: absolute;
       transition: 0.2s;
+      user-select: none;
+      touch-action: manipulation;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
     }
 
     #yes {
@@ -53,6 +83,7 @@
       left: 50%;
       transform: translateX(-50%);
       bottom: 0;
+      z-index: 2;
     }
 
     #no {
@@ -60,86 +91,108 @@
       color: white;
       left: 20%;
       top: 0;
+      z-index: 1;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      opacity: 0.85;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h1>💘 Veux-tu être ma Saint-Valentin ? 💘</h1>
+
+    <div class="theme">
+      <div class="badge">
+        <span class="emoji">🐻</span>
+        <span>Unë jam arushi</span>
+      </div>
+      <div class="badge">
+        <span class="emoji">🦌</span>
+        <span>Ti je Bambi</span>
+      </div>
+    </div>
+
+    <h1>🐻🦌 A po don mu kan Shën Valentini jem?</h1>
 
     <div class="buttons">
-      <button id="no">Non 😅</button>
-      <button id="yes" onclick="window.location.href='bambi.html'">
-        Oui ❤️
-      </button>
+      <button id="no">jo</button>
+      <button id="yes" onclick="window.location.href='bambi.html'">po</button>
     </div>
+
+    <div class="hint">Provo me zgjedh “jo” 😏</div>
   </div>
 
- <script>
-  const noBtn = document.getElementById("no");
-  const yesBtn = document.getElementById("yes");
-  const container = document.querySelector(".buttons");
+  <script>
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const container = document.querySelector(".buttons");
 
-  let lastMove = 0;
-  const COOLDOWN = 400; // ms entre chaque déplacement
-  const SAFE_DISTANCE = 120; // distance mini avec le bouton Oui
+    let lastMove = 0;
+    const COOLDOWN = 450;      // un peu plus lent = moins nerveux
+    const SAFE_DISTANCE = 170; // zone interdite + grande autour du bouton "po"
 
-  function moveNoButton() {
-    const now = Date.now();
-    if (now - lastMove < COOLDOWN) return;
-    lastMove = now;
+    function moveNoButton() {
+      const now = Date.now();
+      if (now - lastMove < COOLDOWN) return;
+      lastMove = now;
 
-    const maxX = container.clientWidth - noBtn.offsetWidth;
-    const maxY = container.clientHeight - noBtn.offsetHeight;
+      const maxX = container.clientWidth - noBtn.offsetWidth;
+      const maxY = container.clientHeight - noBtn.offsetHeight;
 
-    let x, y, tries = 0;
+      let x, y, tries = 0;
+      let distance = 0;
 
-    do {
-      x = Math.random() * maxX;
-      y = Math.random() * maxY;
-      tries++;
+      do {
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
+        tries++;
 
-      const yesRect = yesBtn.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
+        const yesRect = yesBtn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
 
-      const noCenterX = containerRect.left + x + noBtn.offsetWidth / 2;
-      const noCenterY = containerRect.top + y + noBtn.offsetHeight / 2;
+        const noCenterX = containerRect.left + x + noBtn.offsetWidth / 2;
+        const noCenterY = containerRect.top + y + noBtn.offsetHeight / 2;
 
-      const yesCenterX = yesRect.left + yesRect.width / 2;
-      const yesCenterY = yesRect.top + yesRect.height / 2;
+        const yesCenterX = yesRect.left + yesRect.width / 2;
+        const yesCenterY = yesRect.top + yesRect.height / 2;
 
-      var distance = Math.hypot(
-        noCenterX - yesCenterX,
-        noCenterY - yesCenterY
+        distance = Math.hypot(noCenterX - yesCenterX, noCenterY - yesCenterY);
+
+      } while (distance < SAFE_DISTANCE && tries < 25);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    document.addEventListener("mousemove", (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const distanceToMouse = Math.hypot(
+        e.clientX - (rect.left + rect.width / 2),
+        e.clientY - (rect.top + rect.height / 2)
       );
 
-    } while (distance < SAFE_DISTANCE && tries < 10);
+      if (distanceToMouse < 110) {
+        moveNoButton();
+      }
+    });
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-  }
-
-  document.addEventListener("mousemove", (e) => {
-    const rect = noBtn.getBoundingClientRect();
-    const distance = Math.hypot(
-      e.clientX - (rect.left + rect.width / 2),
-      e.clientY - (rect.top + rect.height / 2)
-    );
-
-    if (distance < 90) {
+    // mobile / touche : si elle arrive à taper dessus, ça redirige quand même
+    noBtn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
       moveNoButton();
-    }
-  });
+    });
 
-  // sécurité mobile : si elle clique quand même
-  noBtn.addEventListener("click", () => {
-    alert("Bien essayé 😏");
-    window.location.href = "bambi.html";
-  });
-</script>
-
-
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Jo? 😏 S’ka shans! 🐻🦌");
+      window.location.href = "bambi.html";
+    });
+  </script>
 
 </body>
 </html>
