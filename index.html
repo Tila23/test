@@ -73,27 +73,69 @@
     </div>
   </div>
 
-  <script>
+ <script>
   const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
   const container = document.querySelector(".buttons");
 
-  document.addEventListener("mousemove", (e) => {
-    const btnRect = noBtn.getBoundingClientRect();
+  let lastMove = 0;
+  const COOLDOWN = 400; // ms entre chaque déplacement
+  const SAFE_DISTANCE = 120; // distance mini avec le bouton Oui
 
+  function moveNoButton() {
+    const now = Date.now();
+    if (now - lastMove < COOLDOWN) return;
+    lastMove = now;
+
+    const maxX = container.clientWidth - noBtn.offsetWidth;
+    const maxY = container.clientHeight - noBtn.offsetHeight;
+
+    let x, y, tries = 0;
+
+    do {
+      x = Math.random() * maxX;
+      y = Math.random() * maxY;
+      tries++;
+
+      const yesRect = yesBtn.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      const noCenterX = containerRect.left + x + noBtn.offsetWidth / 2;
+      const noCenterY = containerRect.top + y + noBtn.offsetHeight / 2;
+
+      const yesCenterX = yesRect.left + yesRect.width / 2;
+      const yesCenterY = yesRect.top + yesRect.height / 2;
+
+      var distance = Math.hypot(
+        noCenterX - yesCenterX,
+        noCenterY - yesCenterY
+      );
+
+    } while (distance < SAFE_DISTANCE && tries < 10);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    const rect = noBtn.getBoundingClientRect();
     const distance = Math.hypot(
-      e.clientX - (btnRect.left + btnRect.width / 2),
-      e.clientY - (btnRect.top + btnRect.height / 2)
+      e.clientX - (rect.left + rect.width / 2),
+      e.clientY - (rect.top + rect.height / 2)
     );
 
-    if (distance < 100) {
-      const maxX = container.clientWidth - noBtn.offsetWidth;
-      const maxY = container.clientHeight - noBtn.offsetHeight;
-
-      noBtn.style.left = Math.random() * maxX + "px";
-      noBtn.style.top = Math.random() * maxY + "px";
+    if (distance < 90) {
+      moveNoButton();
     }
   });
+
+  // sécurité mobile : si elle clique quand même
+  noBtn.addEventListener("click", () => {
+    alert("Bien essayé 😏");
+    window.location.href = "bambi.html";
+  });
 </script>
+
 
 
 </body>
