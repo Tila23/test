@@ -74,21 +74,27 @@
   </div>
 
   <script>
-    const noBtn = document.getElementById("no");
+  const noBtn = document.getElementById("no");
+  const container = document.querySelector(".buttons");
 
-    noBtn.addEventListener("mouseover", () => {
-      const container = document.querySelector(".buttons");
+  document.addEventListener("mousemove", (e) => {
+    const btnRect = noBtn.getBoundingClientRect();
 
+    const distance = Math.hypot(
+      e.clientX - (btnRect.left + btnRect.width / 2),
+      e.clientY - (btnRect.top + btnRect.height / 2)
+    );
+
+    if (distance < 100) {
       const maxX = container.clientWidth - noBtn.offsetWidth;
       const maxY = container.clientHeight - noBtn.offsetHeight;
 
-      const randomX = Math.random() * maxX;
-      const randomY = Math.random() * maxY;
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top = Math.random() * maxY + "px";
+    }
+  });
+</script>
 
-      noBtn.style.left = randomX + "px";
-      noBtn.style.top = randomY + "px";
-    });
-  </script>
 
 </body>
 </html>
